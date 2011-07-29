@@ -20,11 +20,14 @@
 #define VC0706_COMM_MOTION_DETECTED 0x39
 #define VC0706_MOTION_CTRL 0x42
 #define VC0706_MOTION_STATUS 0x43
+#define VC0706_TVOUT_CTRL 0x44
+#define VC0706_OSD_ADD_CHAR 0x45
 
 #define VC0706_STOPCURRENTFRAME 0x0
 #define VC0706_STOPNEXTFRAME 0x1
-#define VC0706_RESUMEFRAME 0x2
-#define VC0706_STEPFRAME 0x3
+#define VC0706_RESUMEFRAME 0x3
+#define VC0706_STEPFRAME 0x2
+
 #define VC0706_640x480 0x00
 #define VC0706_320x240 0x11
 #define VC0706_160x120 0x22
@@ -43,8 +46,11 @@ class VC0706 {
   VC0706(NewSoftSerial *ser);
   boolean begin(uint16_t baud = 38400);
   boolean reset(void);
+  boolean TVon(void);
+  boolean TVoff(void);
   boolean takePicture(void);
   uint8_t *readPicture(uint8_t n);
+  boolean resumeVideo(void);
   uint32_t frameLength(void);
   char *getVersion(void);
   uint8_t available();
@@ -58,6 +64,7 @@ class VC0706 {
   boolean setMotionDetect(boolean f);
   boolean setMotionStatus(uint8_t x, uint8_t d1, uint8_t d2);
   boolean cameraFrameBuffCtrl(uint8_t command);
+  boolean OSD(uint8_t x, uint8_t y, char *str);
 
  private:
   uint8_t _rx, _tx;
@@ -70,7 +77,7 @@ class VC0706 {
 
   NewSoftSerial *camera;
 
-  boolean runCommand(uint8_t cmd, uint8_t args[], uint8_t argn, uint8_t resp); 
+  boolean runCommand(uint8_t cmd, uint8_t args[], uint8_t argn, uint8_t resp, boolean flushflag = true); 
   void sendCommand(uint8_t cmd, uint8_t args[], uint8_t argn); 
   uint8_t readResponse(uint8_t numbytes, uint8_t timeout);
   boolean verifyResponse(uint8_t command);

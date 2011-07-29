@@ -114,11 +114,47 @@ char * VC0706::getVersion(void) {
 
 /****************** high level photo comamnds */
 
+boolean VC0706::OSD(uint8_t x, uint8_t y, char *str) {
+  if (strlen(str) > 14) { str[13] = 0; }
+
+  uint8_t args[17] = {strlen(str), strlen(str)-1, (y & 0xF) | ((x & 0x3) << 4)};
+
+  for (uint8_t i=0; i<strlen(str); i++) {
+    char c = str[i];
+    if ((c >= '0') && (c <= '9')) {
+      str[i] -= '0';
+    } else if ((c >= 'A') && (c <= 'Z')) {
+      str[i] -= 'A';
+      str[i] += 10;
+    } else if ((c >= 'a') && (c <= 'z')) {
+      str[i] -= 'a';
+      str[i] += 36;
+    }
+
+    args[3+i] = str[i];
+  }
+
+   runCommand(VC0706_OSD_ADD_CHAR, args, strlen(str)+3, 5);
+   printBuff();
+}
+
 boolean VC0706::takePicture() {
   frameptr = 0;
   return cameraFrameBuffCtrl(VC0706_STOPCURRENTFRAME); 
 }
 
+boolean VC0706::resumeVideo() {
+  return cameraFrameBuffCtrl(VC0706_RESUMEFRAME); 
+}
+
+boolean VC0706::TVon() {
+  uint8_t args[] = {0x1, 0x1};
+  return runCommand(VC0706_TVOUT_CTRL, args, sizeof(args), 5);
+}
+boolean VC0706::TVoff() {
+  uint8_t args[] = {0x1, 0x0};
+  return runCommand(VC0706_TVOUT_CTRL, args, sizeof(args), 5);
+}
 
 boolean VC0706::cameraFrameBuffCtrl(uint8_t command) {
   uint8_t args[] = {0x1, command};
@@ -138,6 +174,7 @@ uint32_t VC0706::frameLength(void) {
   len |= camerabuff[7];
   len <<= 8;
   len |= camerabuff[8];
+
   return len;
 }
 
@@ -153,12 +190,15 @@ uint8_t * VC0706::readPicture(uint8_t n) {
                     0, 0, 0, n, 
                     CAMERADELAY >> 8, CAMERADELAY & 0xFF};
 
-  if (! runCommand(VC0706_READ_FBUF, args, sizeof(args), 5))
+  if (! runCommand(VC0706_READ_FBUF, args, sizeof(args), 5, false))
     return 0;
 
+
   // read into the buffer PACKETLEN!
-  if (readResponse(n+5, 250) == 0) 
+  if (readResponse(n+5, CAMERADELAY) == 0) 
       return 0;
+
+
   frameptr += n;
 
   return camerabuff;
@@ -168,9 +208,11 @@ uint8_t * VC0706::readPicture(uint8_t n) {
 
 
 boolean VC0706::runCommand(uint8_t cmd, uint8_t *args, uint8_t argn, 
-			   uint8_t resplen) {
+			   uint8_t resplen, boolean flushflag) {
   // flush out anything in the buffer?
-  readResponse(100, 200); 
+  if (flushflag) {
+    readResponse(100, 10); 
+  }
 
   sendCommand(cmd, args, argn);
   if (readResponse(resplen, 200) != resplen) 
@@ -187,6 +229,8 @@ void VC0706::sendCommand(uint8_t cmd, uint8_t args[] = 0, uint8_t argn = 0) {
 
   for (uint8_t i=0; i<argn; i++) {
     camera->print(args[i], BYTE);
+    //Serial.print(" 0x");
+    //Serial.print(args[i], HEX);
   }
 }
 
