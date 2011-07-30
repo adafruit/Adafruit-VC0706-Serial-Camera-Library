@@ -36,6 +36,8 @@
 #define VC0706_UARTMOTION 0x01
 #define VC0706_ACTIVATEMOTION 0x01
 
+#define VC0706_SET_ZOOM 0x52
+#define VC0706_GET_ZOOM 0x53
 
 #define CAMERABUFFSIZ 100
 #define CAMERADELAY 10
@@ -64,8 +66,14 @@ class VC0706 {
   boolean setMotionDetect(boolean f);
   boolean setMotionStatus(uint8_t x, uint8_t d1, uint8_t d2);
   boolean cameraFrameBuffCtrl(uint8_t command);
-  boolean OSD(uint8_t x, uint8_t y, char *str);
+  uint8_t getCompression();
+  boolean setCompression(uint8_t c);
+  
+  boolean getPTZ(uint16_t &w, uint16_t &h, uint16_t &wz, uint16_t &hz, uint16_t &pan, uint16_t &tilt);
+  boolean setPTZ(uint16_t wz, uint16_t hz, uint16_t pan, uint16_t tilt);
 
+  boolean OSD(uint8_t x, uint8_t y, char *s); // isnt supported by the chip :(
+  
  private:
   uint8_t _rx, _tx;
   uint16_t baud;

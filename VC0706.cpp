@@ -138,6 +138,63 @@ boolean VC0706::OSD(uint8_t x, uint8_t y, char *str) {
    printBuff();
 }
 
+boolean VC0706::setCompression(uint8_t c) {
+  uint8_t args[] = {0x5, 0x1, 0x1, 0x12, 0x04, c};
+  return runCommand(VC0706_WRITE_DATA, args, sizeof(args), 5);
+}
+
+uint8_t VC0706::getCompression(void) {
+  uint8_t args[] = {0x4, 0x1, 0x1, 0x12, 0x04};
+  runCommand(VC0706_READ_DATA, args, sizeof(args), 6);
+  printBuff();
+  return camerabuff[5];
+}
+
+boolean VC0706::setPTZ(uint16_t wz, uint16_t hz, uint16_t pan, uint16_t tilt) {
+  uint8_t args[] = {0x08, wz >> 8, wz, 
+		    hz >> 8, wz, 
+		    pan>>8, pan, 
+		    tilt>>8, tilt};
+
+  return (! runCommand(VC0706_SET_ZOOM, args, sizeof(args), 5));
+}
+
+
+boolean VC0706::getPTZ(uint16_t &w, uint16_t &h, uint16_t &wz, uint16_t &hz, uint16_t &pan, uint16_t &tilt) {
+  uint8_t args[] = {0x0};
+  
+  if (! runCommand(VC0706_GET_ZOOM, args, sizeof(args), 16))
+    return false;
+  printBuff();
+
+  w = camerabuff[5];
+  w <<= 8;
+  w |= camerabuff[6];
+
+  h = camerabuff[7];
+  h <<= 8;
+  h |= camerabuff[8];
+
+  wz = camerabuff[9];
+  wz <<= 8;
+  wz |= camerabuff[10];
+
+  hz = camerabuff[11];
+  hz <<= 8;
+  hz |= camerabuff[12];
+
+  pan = camerabuff[13];
+  pan <<= 8;
+  pan |= camerabuff[14];
+
+  tilt = camerabuff[15];
+  tilt <<= 8;
+  tilt |= camerabuff[16];
+
+  return true;
+}
+
+
 boolean VC0706::takePicture() {
   frameptr = 0;
   return cameraFrameBuffCtrl(VC0706_STOPCURRENTFRAME); 
