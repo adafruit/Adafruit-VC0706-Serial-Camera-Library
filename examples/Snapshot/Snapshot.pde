@@ -57,6 +57,9 @@ void setup() {
   if (imgsize == VC0706_320x240) Serial.println("320x240");
   if (imgsize == VC0706_160x120) Serial.println("160x120");
 
+  Serial.println("Snap in 3 secs...");
+  delay(3000);
+
   if (! cam.takePicture()) 
     Serial.println("Failed to snap!");
   else 
@@ -88,7 +91,7 @@ void setup() {
   while (jpglen != 0) {
     // read 64 bytes at a time;
     uint8_t *buffer;
-    uint8_t bytesToRead = min(64, jpglen);
+    uint8_t bytesToRead = min(32, jpglen);   // change 32 to 64 for a speedup but may not work with all setups!
     buffer = cam.readPicture(bytesToRead);
     imgFile.write(buffer, bytesToRead);
     //Serial.print("Read ");  Serial.print(bytesToRead, DEC); Serial.println(" bytes");
