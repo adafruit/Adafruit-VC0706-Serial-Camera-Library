@@ -2,8 +2,13 @@
 // (c) adafruit - MIT license - https://github.com/adafruit/
 
 
-#include <WProgram.h>
-#include "NewSoftSerial.h"
+#if ARDUINO >= 100
+ #include "Arduino.h"
+ #include "SoftwareSerial.h"
+#else
+ #include "WProgram.h"
+ #include "NewSoftSerial.h"
+#endif
 
 
 #define VC0706_RESET  0x26
@@ -45,7 +50,11 @@
 
 class VC0706 {
  public:
+#if ARDUINO >= 100
+  VC0706(SoftwareSerial *ser);
+#else
   VC0706(NewSoftSerial *ser);
+#endif
   boolean begin(uint16_t baud = 38400);
   boolean reset(void);
   boolean TVon(void);
@@ -72,7 +81,7 @@ class VC0706 {
   boolean getPTZ(uint16_t &w, uint16_t &h, uint16_t &wz, uint16_t &hz, uint16_t &pan, uint16_t &tilt);
   boolean setPTZ(uint16_t wz, uint16_t hz, uint16_t pan, uint16_t tilt);
 
-  boolean OSD(uint8_t x, uint8_t y, char *s); // isnt supported by the chip :(
+  void OSD(uint8_t x, uint8_t y, char *s); // isnt supported by the chip :(
   
  private:
   uint8_t _rx, _tx;
@@ -83,7 +92,11 @@ class VC0706 {
   uint8_t bufferLen;
   uint16_t frameptr;
 
+#if ARDUINO >= 100
+  SoftwareSerial *camera;
+#else
   NewSoftSerial *camera;
+#endif
 
   boolean runCommand(uint8_t cmd, uint8_t args[], uint8_t argn, uint8_t resp, boolean flushflag = true); 
   void sendCommand(uint8_t cmd, uint8_t args[], uint8_t argn); 

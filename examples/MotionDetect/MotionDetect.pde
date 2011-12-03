@@ -6,14 +6,22 @@
 
 
 #include <VC0706.h>
-#include <NewSoftSerial.h>
 #include <SD.h>
+#if ARDUINO >= 100
+ #include <SoftwareSerial.h>
+#else
+ #include <NewSoftSerial.h>
+#endif
 
 // This is the SD card chip select line, 10 is common
 #define chipSelect 10
 // This is the camera pin connection. Connect the camera TX
 // to pin 2, camera RX to pin 3
+#if ARDUINO >= 100
+SoftwareSerial cameraconnection = SoftwareSerial(2, 3);
+#else
 NewSoftSerial cameraconnection = NewSoftSerial(2, 3);
+#endif
 // pass the serial connection to the camera object
 VC0706 cam = VC0706(&cameraconnection);
 

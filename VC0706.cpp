@@ -4,7 +4,11 @@
 #include "VC0706.h"
 
 
+#if ARDUINO >= 100
+VC0706::VC0706(SoftwareSerial *ser) {
+#else
 VC0706::VC0706(NewSoftSerial *ser) {
+#endif
   camera = ser;
   frameptr = 0;
   bufferLen = 0;
@@ -114,7 +118,7 @@ char * VC0706::getVersion(void) {
 
 /****************** high level photo comamnds */
 
-boolean VC0706::OSD(uint8_t x, uint8_t y, char *str) {
+void VC0706::OSD(uint8_t x, uint8_t y, char *str) {
   if (strlen(str) > 14) { str[13] = 0; }
 
   uint8_t args[17] = {strlen(str), strlen(str)-1, (y & 0xF) | ((x & 0x3) << 4)};
@@ -280,6 +284,17 @@ boolean VC0706::runCommand(uint8_t cmd, uint8_t *args, uint8_t argn,
 }
 
 void VC0706::sendCommand(uint8_t cmd, uint8_t args[] = 0, uint8_t argn = 0) {
+#if ARDUINO >= 100
+  camera->write((byte)0x56);
+  camera->write((byte)cameraSerial);
+  camera->write((byte)cmd);
+
+  for (uint8_t i=0; i<argn; i++) {
+    camera->write((byte)args[i]);
+    //Serial.print(" 0x");
+    //Serial.print(args[i], HEX);
+  }
+#else
   camera->print(0x56, BYTE);
   camera->print(cameraSerial, BYTE);
   camera->print(cmd, BYTE);
@@ -289,6 +304,7 @@ void VC0706::sendCommand(uint8_t cmd, uint8_t args[] = 0, uint8_t argn = 0) {
     //Serial.print(" 0x");
     //Serial.print(args[i], HEX);
   }
+#endif
 }
 
 
