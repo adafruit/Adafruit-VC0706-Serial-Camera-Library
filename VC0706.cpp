@@ -3,22 +3,36 @@
 
 #include "VC0706.h"
 
+// Initialization code used by all constructor types
+void VC0706::common_init(void) {
+  swSerial  = NULL;
+  hwSerial  = NULL;
+  frameptr  = 0;
+  bufferLen = 0;
+  serialNum = 0;
+}
 
+// Constructor when using SoftwareSerial or NewSoftSerial
 #if ARDUINO >= 100
 VC0706::VC0706(SoftwareSerial *ser) {
 #else
 VC0706::VC0706(NewSoftSerial *ser) {
 #endif
-  camera = ser;
-  frameptr = 0;
-  bufferLen = 0;
+  common_init();  // Set everything to common state, then...
+  swSerial = ser; // ...override swSerial with value passed.
+}
+
+// Constructor when using HardwareSerial
+VC0706::VC0706(HardwareSerial *ser) {
+  common_init();  // Set everything to common state, then...
+  hwSerial = ser; // ...override hwSerial with value passed.
 }
 
 boolean VC0706::begin(uint16_t baud) {
-  camera->begin(baud);
+  if(swSerial) swSerial->begin(baud);
+  else         hwSerial->begin(baud);
   return reset();
 }
-
 
 boolean VC0706::reset() {
   uint8_t args[] = {0x0};
@@ -284,50 +298,75 @@ boolean VC0706::runCommand(uint8_t cmd, uint8_t *args, uint8_t argn,
 }
 
 void VC0706::sendCommand(uint8_t cmd, uint8_t args[] = 0, uint8_t argn = 0) {
+  if(swSerial) {
 #if ARDUINO >= 100
-  camera->write((byte)0x56);
-  camera->write((byte)cameraSerial);
-  camera->write((byte)cmd);
+    swSerial->write((byte)0x56);
+    swSerial->write((byte)serialNum);
+    swSerial->write((byte)cmd);
 
-  for (uint8_t i=0; i<argn; i++) {
-    camera->write((byte)args[i]);
-    //Serial.print(" 0x");
-    //Serial.print(args[i], HEX);
-  }
+    for (uint8_t i=0; i<argn; i++) {
+      swSerial->write((byte)args[i]);
+      //Serial.print(" 0x");
+      //Serial.print(args[i], HEX);
+    }
 #else
-  camera->print(0x56, BYTE);
-  camera->print(cameraSerial, BYTE);
-  camera->print(cmd, BYTE);
+    swSerial->print(0x56, BYTE);
+    swSerial->print(serialNum, BYTE);
+    swSerial->print(cmd, BYTE);
 
-  for (uint8_t i=0; i<argn; i++) {
-    camera->print(args[i], BYTE);
-    //Serial.print(" 0x");
-    //Serial.print(args[i], HEX);
-  }
+    for (uint8_t i=0; i<argn; i++) {
+      swSerial->print(args[i], BYTE);
+      //Serial.print(" 0x");
+      //Serial.print(args[i], HEX);
+    }
 #endif
-}
+  } else {
+#if ARDUINO >= 100
+    hwSerial->write((byte)0x56);
+    hwSerial->write((byte)serialNum);
+    hwSerial->write((byte)cmd);
 
+    for (uint8_t i=0; i<argn; i++) {
+      hwSerial->write((byte)args[i]);
+      //Serial.print(" 0x");
+      //Serial.print(args[i], HEX);
+    }
+#else
+    hwSerial->print(0x56, BYTE);
+    hwSerial->print(serialNum, BYTE);
+    hwSerial->print(cmd, BYTE);
+
+    for (uint8_t i=0; i<argn; i++) {
+      hwSerial->print(args[i], BYTE);
+      //Serial.print(" 0x");
+      //Serial.print(args[i], HEX);
+    }
+#endif
+  }
+}
 
 uint8_t VC0706::readResponse(uint8_t numbytes, uint8_t timeout) {
   uint8_t counter = 0;
-  bufferLen=0;
+  bufferLen = 0;
+  int avail;
  
- while ((timeout != counter) && (bufferLen != numbytes)){
-   if (! camera->available()) {
-     delay(1);
-     counter++;
-     continue;
-   }
-   counter = 0;
-   // there's a byte!
-   camerabuff[bufferLen++] = camera->read();
- }
- return bufferLen;
+  while ((timeout != counter) && (bufferLen != numbytes)){
+    avail = swSerial ? swSerial->available() : hwSerial->available();
+    if (avail <= 0) {
+      delay(1);
+      counter++;
+      continue;
+    }
+    counter = 0;
+    // there's a byte!
+    camerabuff[bufferLen++] = swSerial ? swSerial->read() : hwSerial->read();
+  }
+  return bufferLen;
 }
 
 boolean VC0706::verifyResponse(uint8_t command) {
   if ((camerabuff[0] != 0x76) ||
-      (camerabuff[1] != cameraSerial) ||
+      (camerabuff[1] != serialNum) ||
       (camerabuff[2] != command) ||
       (camerabuff[3] != 0x0))
       return false;

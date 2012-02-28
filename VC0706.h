@@ -1,7 +1,6 @@
 // This is a simple VC0706 library that doesnt suck
 // (c) adafruit - MIT license - https://github.com/adafruit/
 
-
 #if ARDUINO >= 100
  #include "Arduino.h"
  #include "SoftwareSerial.h"
@@ -9,7 +8,6 @@
  #include "WProgram.h"
  #include "NewSoftSerial.h"
 #endif
-
 
 #define VC0706_RESET  0x26
 #define VC0706_GEN_VERSION 0x11
@@ -51,10 +49,11 @@
 class VC0706 {
  public:
 #if ARDUINO >= 100
-  VC0706(SoftwareSerial *ser);
+  VC0706(SoftwareSerial *ser); // Constructor when using SoftwareSerial
 #else
-  VC0706(NewSoftSerial *ser);
+  VC0706(NewSoftSerial  *ser); // Constructor when using NewSoftSerial
 #endif
+  VC0706(HardwareSerial *ser); // Constructor when using HardwareSerial
   boolean begin(uint16_t baud = 38400);
   boolean reset(void);
   boolean TVon(void);
@@ -84,20 +83,18 @@ class VC0706 {
   void OSD(uint8_t x, uint8_t y, char *s); // isnt supported by the chip :(
   
  private:
-  uint8_t _rx, _tx;
-  uint16_t baud;
-  uint8_t cameraSerial;
-
-  uint8_t camerabuff[CAMERABUFFSIZ+1];
-  uint8_t bufferLen;
+  uint8_t  serialNum;
+  uint8_t  camerabuff[CAMERABUFFSIZ+1];
+  uint8_t  bufferLen;
   uint16_t frameptr;
-
 #if ARDUINO >= 100
-  SoftwareSerial *camera;
+  SoftwareSerial *swSerial;
 #else
-  NewSoftSerial *camera;
+  NewSoftSerial  *swSerial;
 #endif
+  HardwareSerial *hwSerial;
 
+  void common_init(void);
   boolean runCommand(uint8_t cmd, uint8_t args[], uint8_t argn, uint8_t resp, boolean flushflag = true); 
   void sendCommand(uint8_t cmd, uint8_t args[], uint8_t argn); 
   uint8_t readResponse(uint8_t numbytes, uint8_t timeout);
