@@ -15,13 +15,14 @@
 // directly to the SPI bus of the Mega (pins 50-53), or if using
 // a non-Mega, Uno-style board.
 
-#include <VC0706.h>
+#include <Adafruit_VC0706.h>
 #include <SD.h>
-#if ARDUINO >= 100
- #include <SoftwareSerial.h>
-#else
- #include <NewSoftSerial.h>
-#endif
+
+// comment out this line if using Arduino V23 or earlier
+#include <SoftwareSerial.h>         
+
+// uncomment this line if using Arduino V23 or earlier
+// #include <NewSoftSerial.h>       
 
 // SD card chip select line varies among boards/shields:
 // Adafruit SD shields and modules: pin 10
@@ -62,12 +63,12 @@ SoftwareSerial cameraconnection = SoftwareSerial(2, 3);
 #else
 NewSoftSerial cameraconnection = NewSoftSerial(2, 3);
 #endif
-VC0706 cam = VC0706(&cameraconnection);
+
+Adafruit_VC0706 cam = Adafruit_VC0706(&cameraconnection);
 
 // Using hardware serial on Mega: camera TX conn. to RX1,
 // camera RX to TX1, no SoftwareSerial object is required:
-//VC0706 cam = VC0706(&Serial1);
-
+//Adafruit_VC0706 cam = Adafruit_VC0706(&Serial1);
 
 void setup() {
 

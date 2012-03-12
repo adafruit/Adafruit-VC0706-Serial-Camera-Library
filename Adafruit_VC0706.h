@@ -1,5 +1,19 @@
-// This is a simple VC0706 library that doesnt suck
-// (c) adafruit - MIT license - https://github.com/adafruit/
+/*************************************************** 
+  This is a library for the Adafruit TTL JPEG Camera (VC0706 chipset)
+
+  Pick one up today in the adafruit shop!
+  ------> http://www.adafruit.com/products/397
+
+  These displays use Serial to communicate, 2 pins are required to interface
+
+  Adafruit invests time and resources providing this open source code, 
+  please support Adafruit and open-source hardware by purchasing 
+  products from Adafruit!
+
+  Written by Limor Fried/Ladyada for Adafruit Industries.  
+  BSD license, all text above must be included in any redistribution
+ ****************************************************/
+
 
 #if ARDUINO >= 100
  #include "Arduino.h"
@@ -46,14 +60,14 @@
 #define CAMERADELAY 10
 
 
-class VC0706 {
+class Adafruit_VC0706 {
  public:
 #if ARDUINO >= 100
-  VC0706(SoftwareSerial *ser); // Constructor when using SoftwareSerial
+  Adafruit_VC0706(SoftwareSerial *ser); // Constructor when using SoftwareSerial
 #else
-  VC0706(NewSoftSerial  *ser); // Constructor when using NewSoftSerial
+  Adafruit_VC0706(NewSoftSerial  *ser); // Constructor when using NewSoftSerial
 #endif
-  VC0706(HardwareSerial *ser); // Constructor when using HardwareSerial
+  Adafruit_VC0706(HardwareSerial *ser); // Constructor when using HardwareSerial
   boolean begin(uint16_t baud = 38400);
   boolean reset(void);
   boolean TVon(void);

@@ -1,4 +1,4 @@
-// This is a motion-detect camera sketch using the VC0706 library.
+// This is a motion-detect camera sketch using the Adafruit VC0706 library.
 // On start, the Arduino will find the camera and SD card and turn
 // on motion detection.  If motion is detected, the camera will
 // snap a photo, saving it to the SD card.
@@ -16,13 +16,17 @@
 // directly to the SPI bus of the Mega (pins 50-53), or if using
 // a non-Mega, Uno-style board.
 
-#include <VC0706.h>
+#include <Adafruit_VC0706.h>
 #include <SD.h>
-#if ARDUINO >= 100
- #include <SoftwareSerial.h>
-#else
- #include <NewSoftSerial.h>
-#endif
+
+
+// comment out this line if using Arduino V23 or earlier
+#include <SoftwareSerial.h>         
+
+// uncomment this line if using Arduino V23 or earlier
+// #include <NewSoftSerial.h>       
+
+
 
 // SD card chip select line varies among boards/shields:
 // Adafruit SD shields and modules: pin 10
@@ -52,7 +56,7 @@
 //    but must specifically use the two pins defined by that
 //    UART; they are not configurable.  In this case, pass the
 //    desired Serial object (rather than a SoftwareSerial
-//    object) to the VC0706 constructor.
+//    object) to the Adafruit_VC0706 constructor.
 
 // Using SoftwareSerial (Arduino 1.0+) or NewSoftSerial (Arduino 0023 & prior):
 #if ARDUINO >= 100
@@ -63,11 +67,11 @@ SoftwareSerial cameraconnection = SoftwareSerial(2, 3);
 #else
 NewSoftSerial cameraconnection = NewSoftSerial(2, 3);
 #endif
-VC0706 cam = VC0706(&cameraconnection);
+Adafruit_VC0706 cam = Adafruit_VC0706(&cameraconnection);
 
 // Using hardware serial on Mega: camera TX conn. to RX1,
 // camera RX to TX1, no SoftwareSerial object is required:
-//VC0706 cam = VC0706(&Serial1);
+//Adafruit_VC0706 cam = Adafruit_VC0706(&Serial1);
 
 
 void setup() {
