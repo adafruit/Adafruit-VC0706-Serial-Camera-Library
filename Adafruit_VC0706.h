@@ -15,6 +15,8 @@
  ****************************************************/
 
 
+#ifndef ADAFRUIT_VC0706
+#define ADAFRUIT_VC0706
 #if ARDUINO >= 100
  #include "Arduino.h"
  #include "SoftwareSerial.h"
@@ -115,3 +117,4 @@ class Adafruit_VC0706 {
   boolean verifyResponse(uint8_t command);
   void printBuff(void);
 };
+#endif
