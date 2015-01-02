@@ -1,7 +1,6 @@
-// This is a motion-detect camera sketch using the Adafruit VC0706 library.
-// On start, the Arduino will find the camera and SD card and turn
-// on motion detection.  If motion is detected, the camera will
-// snap a photo, saving it to the SD card.
+// This is a basic snapshot sketch using the VC0706 library.
+// On start, the Arduino will find the camera and SD card and
+// then snap a photo, saving it to the SD card.
 // Public domain.
 
 // If using an Arduino Mega (1280, 2560 or ADK) in conjunction
@@ -17,16 +16,14 @@
 // a non-Mega, Uno-style board.
 
 #include <Adafruit_VC0706.h>
+#include <SPI.h>
 #include <SD.h>
-
 
 // comment out this line if using Arduino V23 or earlier
 #include <SoftwareSerial.h>         
 
 // uncomment this line if using Arduino V23 or earlier
 // #include <NewSoftSerial.h>       
-
-
 
 // SD card chip select line varies among boards/shields:
 // Adafruit SD shields and modules: pin 10
@@ -56,7 +53,7 @@
 //    but must specifically use the two pins defined by that
 //    UART; they are not configurable.  In this case, pass the
 //    desired Serial object (rather than a SoftwareSerial
-//    object) to the Adafruit_VC0706 constructor.
+//    object) to the VC0706 constructor.
 
 // Using SoftwareSerial (Arduino 1.0+) or NewSoftSerial (Arduino 0023 & prior):
 #if ARDUINO >= 100
@@ -67,12 +64,12 @@ SoftwareSerial cameraconnection = SoftwareSerial(2, 3);
 #else
 NewSoftSerial cameraconnection = NewSoftSerial(2, 3);
 #endif
+
 Adafruit_VC0706 cam = Adafruit_VC0706(&cameraconnection);
 
 // Using hardware serial on Mega: camera TX conn. to RX1,
 // camera RX to TX1, no SoftwareSerial object is required:
 //Adafruit_VC0706 cam = Adafruit_VC0706(&Serial1);
-
 
 void setup() {
 
@@ -88,7 +85,7 @@ void setup() {
 #endif
 
   Serial.begin(9600);
-  Serial.println("VC0706 Camera test");
+  Serial.println("VC0706 Camera snapshot test");
   
   // see if the card is present and can be initialized:
   if (!SD.begin(chipSelect)) {
@@ -117,8 +114,8 @@ void setup() {
   // Set the picture size - you can choose one of 640x480, 320x240 or 160x120 
   // Remember that bigger pictures take longer to transmit!
   
-  //cam.setImageSize(VC0706_640x480);        // biggest
-  cam.setImageSize(VC0706_320x240);        // medium
+  cam.setImageSize(VC0706_640x480);        // biggest
+  //cam.setImageSize(VC0706_320x240);        // medium
   //cam.setImageSize(VC0706_160x120);          // small
 
   // You can read the size back from the camera (optional, but maybe useful?)
@@ -128,32 +125,15 @@ void setup() {
   if (imgsize == VC0706_320x240) Serial.println("320x240");
   if (imgsize == VC0706_160x120) Serial.println("160x120");
 
+  Serial.println("Snap in 3 secs...");
+  delay(3000);
 
-  //  Motion detection system can alert you when the camera 'sees' motion!
-  cam.setMotionDetect(true);           // turn it on
-  //cam.setMotionDetect(false);        // turn it off   (default)
-
-  // You can also verify whether motion detection is active!
-  Serial.print("Motion detection is ");
-  if (cam.getMotionDetect()) 
-    Serial.println("ON");
-  else 
-    Serial.println("OFF");
-}
-
-
-
-
-void loop() {
- if (cam.motionDetected()) {
-   Serial.println("Motion!");   
-   cam.setMotionDetect(false);
-   
   if (! cam.takePicture()) 
     Serial.println("Failed to snap!");
   else 
     Serial.println("Picture taken!");
   
+  // Create an image with the name IMAGExx.JPG
   char filename[13];
   strcpy(filename, "IMAGE00.JPG");
   for (int i = 0; i < 100; i++) {
@@ -165,29 +145,39 @@ void loop() {
     }
   }
   
+  // Open the file for writing
   File imgFile = SD.open(filename, FILE_WRITE);
-  
+
+  // Get the size of the image (frame) taken  
   uint16_t jpglen = cam.frameLength();
+  Serial.print("Storing ");
   Serial.print(jpglen, DEC);
-  Serial.println(" byte image");
- 
-  Serial.print("Writing image to "); Serial.print(filename);
-  
+  Serial.print(" byte image.");
+
+  int32_t time = millis();
+  pinMode(8, OUTPUT);
+  // Read all the data up to # bytes!
+  byte wCount = 0; // For counting # of writes
   while (jpglen > 0) {
     // read 32 bytes at a time;
     uint8_t *buffer;
     uint8_t bytesToRead = min(32, jpglen); // change 32 to 64 for a speedup but may not work with all setups!
     buffer = cam.readPicture(bytesToRead);
     imgFile.write(buffer, bytesToRead);
-
+    if(++wCount >= 64) { // Every 2K, give a little feedback so it doesn't appear locked up
+      Serial.print('.');
+      wCount = 0;
+    }
     //Serial.print("Read ");  Serial.print(bytesToRead, DEC); Serial.println(" bytes");
-
     jpglen -= bytesToRead;
   }
   imgFile.close();
-  Serial.println("...Done!");
-  cam.resumeVideo();
-  cam.setMotionDetect(true);
- }
+
+  time = millis() - time;
+  Serial.println("done!");
+  Serial.print(time); Serial.println(" ms elapsed");
+}
+
+void loop() {
 }
 
