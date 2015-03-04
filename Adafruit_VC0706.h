@@ -25,6 +25,7 @@
 
 #define VC0706_RESET  0x26
 #define VC0706_GEN_VERSION 0x11
+#define VC0706_SET_PORT 0x24
 #define VC0706_READ_FBUF 0x32
 #define VC0706_GET_FBUF_LEN 0x34
 #define VC0706_FBUF_CTRL 0x36
@@ -95,6 +96,12 @@ class Adafruit_VC0706 {
   boolean setPTZ(uint16_t wz, uint16_t hz, uint16_t pan, uint16_t tilt);
 
   void OSD(uint8_t x, uint8_t y, char *s); // isnt supported by the chip :(
+
+char* setBaud9600();
+char* setBaud19200();
+char* setBaud38400();
+char* setBaud57600();
+char* setBaud115200();
   
  private:
   uint8_t  serialNum;

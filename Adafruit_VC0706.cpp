@@ -65,7 +65,7 @@ boolean Adafruit_VC0706::motionDetected() {
 }
 
 
-uint8_t Adafruit_VC0706::setMotionStatus(uint8_t x, uint8_t d1, uint8_t d2) {
+boolean Adafruit_VC0706::setMotionStatus(uint8_t x, uint8_t d1, uint8_t d2) {
   uint8_t args[] = {0x03, x, d1, d2};
 
   return runCommand(VC0706_MOTION_CTRL, args, sizeof(args), 5);
@@ -143,6 +143,64 @@ char * Adafruit_VC0706::getVersion(void) {
   return (char *)camerabuff;  // return it!
 }
 
+
+/***************** baud rate commands */
+
+char* Adafruit_VC0706::setBaud9600() {
+  uint8_t args[] = {0x03, 0x01, 0xAE, 0xC8};
+
+  sendCommand(VC0706_SET_PORT, args, sizeof(args));
+  // get reply
+  if (!readResponse(CAMERABUFFSIZ, 200)) 
+    return 0;
+  camerabuff[bufferLen] = 0;  // end it!
+  return (char *)camerabuff;  // return it!
+
+}
+
+char* Adafruit_VC0706::setBaud19200() {
+  uint8_t args[] = {0x03, 0x01, 0x56, 0xE4};
+
+  sendCommand(VC0706_SET_PORT, args, sizeof(args));
+  // get reply
+  if (!readResponse(CAMERABUFFSIZ, 200)) 
+    return 0;
+  camerabuff[bufferLen] = 0;  // end it!
+  return (char *)camerabuff;  // return it!
+}
+
+char* Adafruit_VC0706::setBaud38400() {
+  uint8_t args[] = {0x03, 0x01, 0x2A, 0xF2};
+
+  sendCommand(VC0706_SET_PORT, args, sizeof(args));
+  // get reply
+  if (!readResponse(CAMERABUFFSIZ, 200)) 
+    return 0;
+  camerabuff[bufferLen] = 0;  // end it!
+  return (char *)camerabuff;  // return it!
+}
+
+char* Adafruit_VC0706::setBaud57600() {
+  uint8_t args[] = {0x03, 0x01, 0x1C, 0x1C};
+
+  sendCommand(VC0706_SET_PORT, args, sizeof(args));
+  // get reply
+  if (!readResponse(CAMERABUFFSIZ, 200)) 
+    return 0;
+  camerabuff[bufferLen] = 0;  // end it!
+  return (char *)camerabuff;  // return it!
+}
+
+char* Adafruit_VC0706::setBaud115200() {
+  uint8_t args[] = {0x03, 0x01, 0x0D, 0xA6};
+
+  sendCommand(VC0706_SET_PORT, args, sizeof(args));
+  // get reply
+  if (!readResponse(CAMERABUFFSIZ, 200)) 
+    return 0;
+  camerabuff[bufferLen] = 0;  // end it!
+  return (char *)camerabuff;  // return it!
+}
 
 /****************** high level photo comamnds */
 
@@ -342,8 +400,8 @@ void Adafruit_VC0706::sendCommand(uint8_t cmd, uint8_t args[] = 0, uint8_t argn 
 
     for (uint8_t i=0; i<argn; i++) {
       hwSerial->write((byte)args[i]);
-      //Serial.print(" 0x");
-      //Serial.print(args[i], HEX);
+      Serial.print(" 0x");
+      Serial.print(args[i], HEX);
     }
 #else
     hwSerial->print(0x56, BYTE);
@@ -357,6 +415,7 @@ void Adafruit_VC0706::sendCommand(uint8_t cmd, uint8_t args[] = 0, uint8_t argn 
     }
 #endif
   }
+Serial.println();
 }
 
 uint8_t Adafruit_VC0706::readResponse(uint8_t numbytes, uint8_t timeout) {
@@ -375,6 +434,9 @@ uint8_t Adafruit_VC0706::readResponse(uint8_t numbytes, uint8_t timeout) {
     // there's a byte!
     camerabuff[bufferLen++] = swSerial ? swSerial->read() : hwSerial->read();
   }
+  //printBuff();
+//camerabuff[bufferLen] = 0;
+//Serial.println((char*)camerabuff);
   return bufferLen;
 }
 
