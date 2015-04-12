@@ -400,8 +400,8 @@ void Adafruit_VC0706::sendCommand(uint8_t cmd, uint8_t args[] = 0, uint8_t argn 
 
     for (uint8_t i=0; i<argn; i++) {
       hwSerial->write((byte)args[i]);
-      Serial.print(" 0x");
-      Serial.print(args[i], HEX);
+      //Serial.print(" 0x");
+      //Serial.print(args[i], HEX);
     }
 #else
     hwSerial->print(0x56, BYTE);
@@ -415,7 +415,7 @@ void Adafruit_VC0706::sendCommand(uint8_t cmd, uint8_t args[] = 0, uint8_t argn 
     }
 #endif
   }
-Serial.println();
+//Serial.println();
 }
 
 uint8_t Adafruit_VC0706::readResponse(uint8_t numbytes, uint8_t timeout) {
