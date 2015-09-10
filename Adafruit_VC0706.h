@@ -17,7 +17,9 @@
 
 #if ARDUINO >= 100
  #include "Arduino.h"
- #include "SoftwareSerial.h"
+ #if not defined (_VARIANT_ARDUINO_DUE_X_) && not defined (_VARIANT_ARDUINO_ZERO_)
+  #include <SoftwareSerial.h>
+ #endif
 #else
  #include "WProgram.h"
  #include "NewSoftSerial.h"
@@ -63,10 +65,12 @@
 
 class Adafruit_VC0706 {
  public:
-#if ARDUINO >= 100
-  Adafruit_VC0706(SoftwareSerial *ser); // Constructor when using SoftwareSerial
-#else
-  Adafruit_VC0706(NewSoftSerial  *ser); // Constructor when using NewSoftSerial
+#if not defined (_VARIANT_ARDUINO_DUE_X_) && not defined (_VARIANT_ARDUINO_ZERO_)
+  #if ARDUINO >= 100
+    Adafruit_VC0706(SoftwareSerial *ser); // Constructor when using SoftwareSerial
+  #else
+    Adafruit_VC0706(NewSoftSerial  *ser); // Constructor when using NewSoftSerial
+  #endif
 #endif
   Adafruit_VC0706(HardwareSerial *ser); // Constructor when using HardwareSerial
   boolean begin(uint16_t baud = 38400);
@@ -108,10 +112,13 @@ char* setBaud115200();
   uint8_t  camerabuff[CAMERABUFFSIZ+1];
   uint8_t  bufferLen;
   uint16_t frameptr;
-#if ARDUINO >= 100
-  SoftwareSerial *swSerial;
-#else
-  NewSoftSerial  *swSerial;
+
+#if not defined (_VARIANT_ARDUINO_DUE_X_) && not defined (_VARIANT_ARDUINO_ZERO_)
+  #if ARDUINO >= 100
+    SoftwareSerial *swSerial;
+  #else
+    NewSoftSerial  *swSerial;
+  #endif
 #endif
   HardwareSerial *hwSerial;
 
