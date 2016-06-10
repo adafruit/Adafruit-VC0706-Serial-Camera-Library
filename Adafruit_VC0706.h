@@ -15,6 +15,8 @@
  ****************************************************/
 
 
+#ifndef ADAFRUIT_VC0706
+#define ADAFRUIT_VC0706
 #if ARDUINO >= 100
  #include "Arduino.h"
  #if not defined (_VARIANT_ARDUINO_DUE_X_) && not defined (_VARIANT_ARDUINO_ZERO_)
@@ -129,3 +131,4 @@ char* setBaud115200();
   boolean verifyResponse(uint8_t command);
   void printBuff(void);
 };
+#endif
