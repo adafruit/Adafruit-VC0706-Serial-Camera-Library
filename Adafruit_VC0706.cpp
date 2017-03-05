@@ -19,7 +19,7 @@
 
 // Initialization code used by all constructor types
 void Adafruit_VC0706::common_init(void) {
-#if not defined (_VARIANT_ARDUINO_DUE_X_) && not defined (_VARIANT_ARDUINO_ZERO_)
+#if not defined (_VARIANT_ARDUINO_DUE_X_) && not defined (_VARIANT_ARDUINO_ZERO_) && not defined (_VARIANT_ARDUINO_STM32_)
   swSerial  = NULL;
 #endif
   hwSerial  = NULL;
@@ -28,7 +28,7 @@ void Adafruit_VC0706::common_init(void) {
   serialNum = 0;
 }
 
-#if not defined (_VARIANT_ARDUINO_DUE_X_) && not defined (_VARIANT_ARDUINO_ZERO_)
+#if not defined (_VARIANT_ARDUINO_DUE_X_) && not defined (_VARIANT_ARDUINO_ZERO_) && not defined (_VARIANT_ARDUINO_STM32_)
 // Constructor when using SoftwareSerial or NewSoftSerial
   #if ARDUINO >= 100
     Adafruit_VC0706::Adafruit_VC0706(SoftwareSerial *ser) {
@@ -48,7 +48,7 @@ Adafruit_VC0706::Adafruit_VC0706(HardwareSerial *ser) {
 }
 
 boolean Adafruit_VC0706::begin(uint16_t baud) {
-#if not defined (_VARIANT_ARDUINO_DUE_X_) && not defined (_VARIANT_ARDUINO_ZERO_)
+#if not defined (_VARIANT_ARDUINO_DUE_X_) && not defined (_VARIANT_ARDUINO_ZERO_) && not defined (_VARIANT_ARDUINO_STM32_)
   if(swSerial) swSerial->begin(baud);
   else
 #endif
@@ -378,7 +378,7 @@ boolean Adafruit_VC0706::runCommand(uint8_t cmd, uint8_t *args, uint8_t argn,
 }
 
 void Adafruit_VC0706::sendCommand(uint8_t cmd, uint8_t args[] = 0, uint8_t argn = 0) {
-#if not defined (_VARIANT_ARDUINO_DUE_X_) && not defined (_VARIANT_ARDUINO_ZERO_)
+#if not defined (_VARIANT_ARDUINO_DUE_X_) && not defined (_VARIANT_ARDUINO_ZERO_) && not defined (_VARIANT_ARDUINO_STM32_)
     if(swSerial) {
 #if ARDUINO >= 100
     swSerial->write((byte)0x56);
@@ -436,7 +436,7 @@ uint8_t Adafruit_VC0706::readResponse(uint8_t numbytes, uint8_t timeout) {
   int avail;
  
   while ((timeout != counter) && (bufferLen != numbytes)){
-#if not defined (_VARIANT_ARDUINO_DUE_X_) && not defined (_VARIANT_ARDUINO_ZERO_)
+#if not defined (_VARIANT_ARDUINO_DUE_X_) && not defined (_VARIANT_ARDUINO_ZERO_) && not defined (_VARIANT_ARDUINO_STM32_)
     avail = swSerial ? swSerial->available() : hwSerial->available();
 #else
     avail = hwSerial->available();
@@ -448,7 +448,7 @@ uint8_t Adafruit_VC0706::readResponse(uint8_t numbytes, uint8_t timeout) {
     }
     counter = 0;
     // there's a byte!
-#if not defined (_VARIANT_ARDUINO_DUE_X_) && not defined (_VARIANT_ARDUINO_ZERO_)
+#if not defined (_VARIANT_ARDUINO_DUE_X_) && not defined (_VARIANT_ARDUINO_ZERO_) && not defined (_VARIANT_ARDUINO_STM32_)
     camerabuff[bufferLen++] = swSerial ? swSerial->read() : hwSerial->read();
 #else
     camerabuff[bufferLen++] = hwSerial->read();

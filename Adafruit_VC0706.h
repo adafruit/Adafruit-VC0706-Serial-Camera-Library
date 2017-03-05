@@ -17,7 +17,7 @@
 
 #if ARDUINO >= 100
  #include "Arduino.h"
- #if not defined (_VARIANT_ARDUINO_DUE_X_) && not defined (_VARIANT_ARDUINO_ZERO_)
+ #if not defined (_VARIANT_ARDUINO_DUE_X_) && not defined (_VARIANT_ARDUINO_ZERO_) && not defined (_VARIANT_ARDUINO_STM32_)
   #include <SoftwareSerial.h>
  #endif
 #else
@@ -65,7 +65,7 @@
 
 class Adafruit_VC0706 {
  public:
-#if not defined (_VARIANT_ARDUINO_DUE_X_) && not defined (_VARIANT_ARDUINO_ZERO_)
+#if not defined (_VARIANT_ARDUINO_DUE_X_) && not defined (_VARIANT_ARDUINO_ZERO_) && not defined (_VARIANT_ARDUINO_STM32_)
   #if ARDUINO >= 100
     Adafruit_VC0706(SoftwareSerial *ser); // Constructor when using SoftwareSerial
   #else
@@ -113,7 +113,7 @@ char* setBaud115200();
   uint8_t  bufferLen;
   uint16_t frameptr;
 
-#if not defined (_VARIANT_ARDUINO_DUE_X_) && not defined (_VARIANT_ARDUINO_ZERO_)
+#if not defined (_VARIANT_ARDUINO_DUE_X_) && not defined (_VARIANT_ARDUINO_ZERO_) && not defined (_VARIANT_ARDUINO_STM32_)
   #if ARDUINO >= 100
     SoftwareSerial *swSerial;
   #else
