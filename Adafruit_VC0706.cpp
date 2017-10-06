@@ -47,7 +47,7 @@ Adafruit_VC0706::Adafruit_VC0706(HardwareSerial *ser) {
   hwSerial = ser; // ...override hwSerial with value passed.
 }
 
-boolean Adafruit_VC0706::begin(uint16_t baud) {
+boolean Adafruit_VC0706::begin(uint32_t baud) {
 #if not defined (_VARIANT_ARDUINO_DUE_X_) && not defined (_VARIANT_ARDUINO_ZERO_)
   if(swSerial) swSerial->begin(baud);
   else

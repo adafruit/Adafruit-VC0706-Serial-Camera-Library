@@ -73,7 +73,7 @@ class Adafruit_VC0706 {
   #endif
 #endif
   Adafruit_VC0706(HardwareSerial *ser); // Constructor when using HardwareSerial
-  boolean begin(uint16_t baud = 38400);
+  boolean begin(uint32_t baud = 38400);
   boolean reset(void);
   boolean TVon(void);
   boolean TVoff(void);
