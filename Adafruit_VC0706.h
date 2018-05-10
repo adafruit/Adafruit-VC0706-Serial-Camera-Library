@@ -14,6 +14,8 @@
   BSD license, all text above must be included in any redistribution
  ****************************************************/
 
+#ifndef ADAFRUIT_VC0706
+#define ADAFRUIT_VC0706
 
 #if ARDUINO >= 100
  #include "Arduino.h"
@@ -73,12 +75,13 @@ class Adafruit_VC0706 {
   #endif
 #endif
   Adafruit_VC0706(HardwareSerial *ser); // Constructor when using HardwareSerial
-  boolean begin(uint16_t baud = 38400);
+  boolean begin(uint32_t baud = 38400);
   boolean reset(void);
   boolean TVon(void);
   boolean TVoff(void);
   boolean takePicture(void);
   uint8_t *readPicture(uint8_t n);
+  uint8_t *readPicture(uint8_t *buffer, uint32_t n);
   boolean resumeVideo(void);
   uint32_t frameLength(void);
   char *getVersion(void);
@@ -110,8 +113,8 @@ char* setBaud115200();
  private:
   uint8_t  serialNum;
   uint8_t  camerabuff[CAMERABUFFSIZ+1];
-  uint8_t  bufferLen;
-  uint16_t frameptr;
+  uint32_t bufferLen;
+  uint32_t frameptr;
 
 #if not defined (_VARIANT_ARDUINO_DUE_X_) && not defined (_VARIANT_ARDUINO_ZERO_) && not defined (_VARIANT_ARDUINO_STM32_)
   #if ARDUINO >= 100
@@ -125,7 +128,9 @@ char* setBaud115200();
   void common_init(void);
   boolean runCommand(uint8_t cmd, uint8_t args[], uint8_t argn, uint8_t resp, boolean flushflag = true); 
   void sendCommand(uint8_t cmd, uint8_t args[], uint8_t argn); 
-  uint8_t readResponse(uint8_t numbytes, uint8_t timeout);
+  uint32_t readResponse(uint8_t *buffer, uint32_t numbytes, uint8_t timeout);
   boolean verifyResponse(uint8_t command);
   void printBuff(void);
 };
+
+#endif
