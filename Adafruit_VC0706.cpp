@@ -248,6 +248,29 @@ uint8_t Adafruit_VC0706::getCompression(void) {
   return camerabuff[5];
 }
 
+boolean Adafruit_VC0706::setBrightness(uint8_t c) {
+  uint8_t args[] = {0x5, 0x1, 0x1, 0x1A, 0x10, c};
+  return runCommand(VC0706_WRITE_DATA, args, sizeof(args), 5);
+}
+
+boolean Adafruit_VC0706::setContrast(uint8_t c) {
+  uint8_t args[] = {0x5, 0x1, 0x1, 0x1A, 0x11, c};
+  return runCommand(VC0706_WRITE_DATA, args, sizeof(args), 5);
+}
+
+boolean Adafruit_VC0706::setHue(uint8_t c) {
+  uint8_t args[] = {0x5, 0x1, 0x1, 0x1A, 0x14, c};
+  return runCommand(VC0706_WRITE_DATA, args, sizeof(args), 5);
+}
+boolean Adafruit_VC0706::setSaturation(uint8_t c) {
+  uint8_t args[] = {0x5, 0x1, 0x1, 0x1A, 0x15, c};
+  return runCommand(VC0706_WRITE_DATA, args, sizeof(args), 5);
+}
+boolean Adafruit_VC0706::setOffContrast(uint8_t c) {
+  uint8_t args[] = {0x5, 0x1, 0x1, 0x1A, 0x12, c};
+  return runCommand(VC0706_WRITE_DATA, args, sizeof(args), 5);
+}
+
 boolean Adafruit_VC0706::setPTZ(uint16_t wz, uint16_t hz, uint16_t pan, uint16_t tilt) {
   uint8_t args[] = {0x08, wz >> 8, wz, 
 		    hz >> 8, wz, 
