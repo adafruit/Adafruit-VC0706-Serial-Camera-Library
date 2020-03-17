@@ -73,31 +73,31 @@ class Adafruit_VC0706 {
   #endif
 #endif
   Adafruit_VC0706(HardwareSerial *ser); // Constructor when using HardwareSerial
-  boolean begin(uint16_t baud = 38400);
-  boolean reset(void);
-  boolean TVon(void);
-  boolean TVoff(void);
-  boolean takePicture(void);
+  bool begin(uint16_t baud = 38400);
+  bool reset(void);
+  bool TVon(void);
+  bool TVoff(void);
+  bool takePicture(void);
   uint8_t *readPicture(uint8_t n);
-  boolean resumeVideo(void);
+  bool resumeVideo(void);
   uint32_t frameLength(void);
   char *getVersion(void);
   uint8_t available();
   uint8_t getDownsize(void);
-  boolean setDownsize(uint8_t);
+  bool setDownsize(uint8_t);
   uint8_t getImageSize();
-  boolean setImageSize(uint8_t);
-  boolean getMotionDetect();
+  bool setImageSize(uint8_t);
+  bool getMotionDetect();
   uint8_t getMotionStatus(uint8_t);
-  boolean motionDetected();
-  boolean setMotionDetect(boolean f);
-  boolean setMotionStatus(uint8_t x, uint8_t d1, uint8_t d2);
-  boolean cameraFrameBuffCtrl(uint8_t command);
+  bool motionDetected();
+  bool setMotionDetect(bool f);
+  bool setMotionStatus(uint8_t x, uint8_t d1, uint8_t d2);
+  bool cameraFrameBuffCtrl(uint8_t command);
   uint8_t getCompression();
-  boolean setCompression(uint8_t c);
+  bool setCompression(uint8_t c);
   
-  boolean getPTZ(uint16_t &w, uint16_t &h, uint16_t &wz, uint16_t &hz, uint16_t &pan, uint16_t &tilt);
-  boolean setPTZ(uint16_t wz, uint16_t hz, uint16_t pan, uint16_t tilt);
+  bool getPTZ(uint16_t &w, uint16_t &h, uint16_t &wz, uint16_t &hz, uint16_t &pan, uint16_t &tilt);
+  bool setPTZ(uint16_t wz, uint16_t hz, uint16_t pan, uint16_t tilt);
 
   void OSD(uint8_t x, uint8_t y, char *s); // isnt supported by the chip :(
 
@@ -123,9 +123,9 @@ char* setBaud115200();
   HardwareSerial *hwSerial;
 
   void common_init(void);
-  boolean runCommand(uint8_t cmd, uint8_t args[], uint8_t argn, uint8_t resp, boolean flushflag = true); 
+  bool runCommand(uint8_t cmd, uint8_t args[], uint8_t argn, uint8_t resp, bool flushflag = true);
   void sendCommand(uint8_t cmd, uint8_t args[], uint8_t argn); 
   uint8_t readResponse(uint8_t numbytes, uint8_t timeout);
-  boolean verifyResponse(uint8_t command);
+  bool verifyResponse(uint8_t command);
   void printBuff(void);
 };

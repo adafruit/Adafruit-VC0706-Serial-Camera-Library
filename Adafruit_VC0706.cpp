@@ -47,7 +47,7 @@ Adafruit_VC0706::Adafruit_VC0706(HardwareSerial *ser) {
   hwSerial = ser; // ...override hwSerial with value passed.
 }
 
-boolean Adafruit_VC0706::begin(uint16_t baud) {
+bool Adafruit_VC0706::begin(uint16_t baud) {
 #if not defined (_VARIANT_ARDUINO_DUE_X_) && not defined (_VARIANT_ARDUINO_ZERO_)
   if(swSerial) swSerial->begin(baud);
   else
@@ -56,13 +56,13 @@ boolean Adafruit_VC0706::begin(uint16_t baud) {
   return reset();
 }
 
-boolean Adafruit_VC0706::reset() {
+bool Adafruit_VC0706::reset() {
   uint8_t args[] = {0x0};
 
   return runCommand(VC0706_RESET, args, 1, 5);
 }
 
-boolean Adafruit_VC0706::motionDetected() {
+bool Adafruit_VC0706::motionDetected() {
   if (readResponse(4, 200) != 4) {
     return false;
   }
@@ -73,7 +73,7 @@ boolean Adafruit_VC0706::motionDetected() {
 }
 
 
-boolean Adafruit_VC0706::setMotionStatus(uint8_t x, uint8_t d1, uint8_t d2) {
+bool Adafruit_VC0706::setMotionStatus(uint8_t x, uint8_t d1, uint8_t d2) {
   uint8_t args[] = {0x03, x, d1, d2};
 
   return runCommand(VC0706_MOTION_CTRL, args, sizeof(args), 5);
@@ -87,7 +87,7 @@ uint8_t Adafruit_VC0706::getMotionStatus(uint8_t x) {
 }
 
 
-boolean Adafruit_VC0706::setMotionDetect(boolean flag) {
+bool Adafruit_VC0706::setMotionDetect(bool flag) {
   if (! setMotionStatus(VC0706_MOTIONCONTROL, 
 			VC0706_UARTMOTION, VC0706_ACTIVATEMOTION))
     return false;
@@ -99,7 +99,7 @@ boolean Adafruit_VC0706::setMotionDetect(boolean flag) {
 
 
 
-boolean Adafruit_VC0706::getMotionDetect(void) {
+bool Adafruit_VC0706::getMotionDetect(void) {
   uint8_t args[] = {0x0};
 
   if (! runCommand(VC0706_COMM_MOTION_STATUS, args, 1, 6))
@@ -116,7 +116,7 @@ uint8_t Adafruit_VC0706::getImageSize() {
   return camerabuff[5];
 }
 
-boolean Adafruit_VC0706::setImageSize(uint8_t x) {
+bool Adafruit_VC0706::setImageSize(uint8_t x) {
   uint8_t args[] = {0x05, 0x04, 0x01, 0x00, 0x19, x};
 
   return runCommand(VC0706_WRITE_DATA, args, sizeof(args), 5);
@@ -132,7 +132,7 @@ uint8_t Adafruit_VC0706::getDownsize(void) {
    return camerabuff[5];
 }
 
-boolean Adafruit_VC0706::setDownsize(uint8_t newsize) {
+bool Adafruit_VC0706::setDownsize(uint8_t newsize) {
   uint8_t args[] = {0x01, newsize};
 
   return runCommand(VC0706_DOWNSIZE_CTRL, args, 2, 5);
@@ -236,7 +236,7 @@ void Adafruit_VC0706::OSD(uint8_t x, uint8_t y, char *str) {
    printBuff();
 }
 
-boolean Adafruit_VC0706::setCompression(uint8_t c) {
+bool Adafruit_VC0706::setCompression(uint8_t c) {
   uint8_t args[] = {0x5, 0x1, 0x1, 0x12, 0x04, c};
   return runCommand(VC0706_WRITE_DATA, args, sizeof(args), 5);
 }
@@ -248,7 +248,7 @@ uint8_t Adafruit_VC0706::getCompression(void) {
   return camerabuff[5];
 }
 
-boolean Adafruit_VC0706::setPTZ(uint16_t wz, uint16_t hz, uint16_t pan, uint16_t tilt) {
+bool Adafruit_VC0706::setPTZ(uint16_t wz, uint16_t hz, uint16_t pan, uint16_t tilt) {
   uint8_t args[] = {0x08, wz >> 8, wz, 
 		    hz >> 8, wz, 
 		    pan>>8, pan, 
@@ -258,7 +258,7 @@ boolean Adafruit_VC0706::setPTZ(uint16_t wz, uint16_t hz, uint16_t pan, uint16_t
 }
 
 
-boolean Adafruit_VC0706::getPTZ(uint16_t &w, uint16_t &h, uint16_t &wz, uint16_t &hz, uint16_t &pan, uint16_t &tilt) {
+bool Adafruit_VC0706::getPTZ(uint16_t &w, uint16_t &h, uint16_t &wz, uint16_t &hz, uint16_t &pan, uint16_t &tilt) {
   uint8_t args[] = {0x0};
   
   if (! runCommand(VC0706_GET_ZOOM, args, sizeof(args), 16))
@@ -293,25 +293,25 @@ boolean Adafruit_VC0706::getPTZ(uint16_t &w, uint16_t &h, uint16_t &wz, uint16_t
 }
 
 
-boolean Adafruit_VC0706::takePicture() {
+bool Adafruit_VC0706::takePicture() {
   frameptr = 0;
   return cameraFrameBuffCtrl(VC0706_STOPCURRENTFRAME); 
 }
 
-boolean Adafruit_VC0706::resumeVideo() {
+bool Adafruit_VC0706::resumeVideo() {
   return cameraFrameBuffCtrl(VC0706_RESUMEFRAME); 
 }
 
-boolean Adafruit_VC0706::TVon() {
+bool Adafruit_VC0706::TVon() {
   uint8_t args[] = {0x1, 0x1};
   return runCommand(VC0706_TVOUT_CTRL, args, sizeof(args), 5);
 }
-boolean Adafruit_VC0706::TVoff() {
+bool Adafruit_VC0706::TVoff() {
   uint8_t args[] = {0x1, 0x0};
   return runCommand(VC0706_TVOUT_CTRL, args, sizeof(args), 5);
 }
 
-boolean Adafruit_VC0706::cameraFrameBuffCtrl(uint8_t command) {
+bool Adafruit_VC0706::cameraFrameBuffCtrl(uint8_t command) {
   uint8_t args[] = {0x1, command};
   return runCommand(VC0706_FBUF_CTRL, args, sizeof(args), 5);
 }
@@ -362,8 +362,8 @@ uint8_t * Adafruit_VC0706::readPicture(uint8_t n) {
 /**************** low level commands */
 
 
-boolean Adafruit_VC0706::runCommand(uint8_t cmd, uint8_t *args, uint8_t argn, 
-			   uint8_t resplen, boolean flushflag) {
+bool Adafruit_VC0706::runCommand(uint8_t cmd, uint8_t *args, uint8_t argn,
+			   uint8_t resplen, bool flushflag) {
   // flush out anything in the buffer?
   if (flushflag) {
     readResponse(100, 10); 
@@ -460,7 +460,7 @@ uint8_t Adafruit_VC0706::readResponse(uint8_t numbytes, uint8_t timeout) {
   return bufferLen;
 }
 
-boolean Adafruit_VC0706::verifyResponse(uint8_t command) {
+bool Adafruit_VC0706::verifyResponse(uint8_t command) {
   if ((camerabuff[0] != 0x76) ||
       (camerabuff[1] != serialNum) ||
       (camerabuff[2] != command) ||
