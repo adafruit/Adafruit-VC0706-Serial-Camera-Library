@@ -14,15 +14,10 @@
   BSD license, all text above must be included in any redistribution
  ****************************************************/
 
+#include <Arduino.h>
 
-#if ARDUINO >= 100
- #include "Arduino.h"
- #if not defined (_VARIANT_ARDUINO_DUE_X_) && not defined (_VARIANT_ARDUINO_ZERO_)
+#if defined(__AVR__) || defined(ESP8266)
   #include <SoftwareSerial.h>
- #endif
-#else
- #include "WProgram.h"
- #include "NewSoftSerial.h"
 #endif
 
 #define VC0706_RESET  0x26
@@ -65,12 +60,8 @@
 
 class Adafruit_VC0706 {
  public:
-#if not defined (_VARIANT_ARDUINO_DUE_X_) && not defined (_VARIANT_ARDUINO_ZERO_)
-  #if ARDUINO >= 100
+#if defined(__AVR__) || defined(ESP8266)
     Adafruit_VC0706(SoftwareSerial *ser); // Constructor when using SoftwareSerial
-  #else
-    Adafruit_VC0706(NewSoftSerial  *ser); // Constructor when using NewSoftSerial
-  #endif
 #endif
   Adafruit_VC0706(HardwareSerial *ser); // Constructor when using HardwareSerial
   boolean begin(uint16_t baud = 38400);
@@ -113,12 +104,8 @@ char* setBaud115200();
   uint8_t  bufferLen;
   uint16_t frameptr;
 
-#if not defined (_VARIANT_ARDUINO_DUE_X_) && not defined (_VARIANT_ARDUINO_ZERO_)
-  #if ARDUINO >= 100
+#if defined(__AVR__) || defined(ESP8266)
     SoftwareSerial *swSerial;
-  #else
-    NewSoftSerial  *swSerial;
-  #endif
 #endif
   HardwareSerial *hwSerial;
 
