@@ -57,13 +57,18 @@
 #define CAMERABUFFSIZ 100
 #define CAMERADELAY 10
 
+/**************************************************************************/
+/*!
+    @brief Class for communicating with VC0706 cameras
+*/
+/**************************************************************************/
 class Adafruit_VC0706 {
 public:
 #if defined(__AVR__) || defined(ESP8266)
   Adafruit_VC0706(SoftwareSerial *ser); // Constructor when using SoftwareSerial
 #endif
   Adafruit_VC0706(HardwareSerial *ser); // Constructor when using HardwareSerial
-  boolean begin(uint16_t baud = 38400);
+  boolean begin(uint32_t baud = 38400);
   boolean reset(void);
   boolean TVon(void);
   boolean TVoff(void);
