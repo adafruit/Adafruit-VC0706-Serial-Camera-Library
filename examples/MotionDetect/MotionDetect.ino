@@ -25,9 +25,9 @@
 
 // On Uno: camera TX connected to pin 2, camera RX to pin 3:
 #include <SoftwareSerial.h>         
-SoftwareSerial cameraconnection = SoftwareSerial(2, 3);
+SoftwareSerial cameraconnection(2, 3);
 // On Mega: camera TX connected to pin 69 (A15), camera RX to pin 3:
-//SoftwareSerial cameraconnection = SoftwareSerial(69, 3);
+//SoftwareSerial cameraconnection(69, 3);
 
 #else
 // On Leonardo/M0/etc, others with hardware serial, use hardware serial!
@@ -173,7 +173,7 @@ void loop() {
   while (jpglen > 0) {
     // read 32 bytes at a time;
     uint8_t *buffer;
-    uint8_t bytesToRead = min(32, jpglen); // change 32 to 64 for a speedup but may not work with all setups!
+    uint8_t bytesToRead = min((uint16_t)32, jpglen); // change 32 to 64 for a speedup but may not work with all setups!
     buffer = cam.readPicture(bytesToRead);
     imgFile.write(buffer, bytesToRead);
 
