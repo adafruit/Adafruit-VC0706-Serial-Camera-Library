@@ -21,12 +21,23 @@
 #include <SD.h>
 
 
-// comment out this line if using Arduino V23 or earlier
+#if defined(__AVR__) || defined(ESP8266)
+
+// On Uno: camera TX connected to pin 2, camera RX to pin 3:
 #include <SoftwareSerial.h>         
+SoftwareSerial cameraconnection(2, 3);
+// On Mega: camera TX connected to pin 69 (A15), camera RX to pin 3:
+//SoftwareSerial cameraconnection(69, 3);
 
-// uncomment this line if using Arduino V23 or earlier
-// #include <NewSoftSerial.h>       
+#else
+// On Leonardo/M0/etc, others with hardware serial, use hardware serial!
+// Using hardware serial on Mega: camera TX conn. to RX1,
+// camera RX to TX1, no SoftwareSerial object is required:
+#define cameraconnection Serial1
 
+#endif
+
+Adafruit_VC0706 cam = Adafruit_VC0706(&cameraconnection);
 
 
 // SD card chip select line varies among boards/shields:
@@ -58,21 +69,6 @@
 //    UART; they are not configurable.  In this case, pass the
 //    desired Serial object (rather than a SoftwareSerial
 //    object) to the Adafruit_VC0706 constructor.
-
-// Using SoftwareSerial (Arduino 1.0+) or NewSoftSerial (Arduino 0023 & prior):
-#if ARDUINO >= 100
-// On Uno: camera TX connected to pin 2, camera RX to pin 3:
-SoftwareSerial cameraconnection = SoftwareSerial(2, 3);
-// On Mega: camera TX connected to pin 69 (A15), camera RX to pin 3:
-//SoftwareSerial cameraconnection = SoftwareSerial(69, 3);
-#else
-NewSoftSerial cameraconnection = NewSoftSerial(2, 3);
-#endif
-Adafruit_VC0706 cam = Adafruit_VC0706(&cameraconnection);
-
-// Using hardware serial on Mega: camera TX conn. to RX1,
-// camera RX to TX1, no SoftwareSerial object is required:
-//Adafruit_VC0706 cam = Adafruit_VC0706(&Serial1);
 
 
 void setup() {
@@ -177,7 +173,7 @@ void loop() {
   while (jpglen > 0) {
     // read 32 bytes at a time;
     uint8_t *buffer;
-    uint8_t bytesToRead = min(32, jpglen); // change 32 to 64 for a speedup but may not work with all setups!
+    uint8_t bytesToRead = min((uint16_t)32, jpglen); // change 32 to 64 for a speedup but may not work with all setups!
     buffer = cam.readPicture(bytesToRead);
     imgFile.write(buffer, bytesToRead);
 
