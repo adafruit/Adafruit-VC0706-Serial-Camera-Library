@@ -16,7 +16,7 @@
 
 #include <Arduino.h>
 
-#if defined(__AVR__) || defined(ESP8266)
+#if defined(__AVR__) || defined(ESP8266) || defined(ESP32)
 #include <SoftwareSerial.h>
 #endif
 
@@ -64,7 +64,7 @@
 /**************************************************************************/
 class Adafruit_VC0706 {
 public:
-#if defined(__AVR__) || defined(ESP8266)
+#if defined(__AVR__) || defined(ESP8266) || defined(ESP32)
   Adafruit_VC0706(SoftwareSerial *ser); // Constructor when using SoftwareSerial
 #endif
   Adafruit_VC0706(HardwareSerial *ser); // Constructor when using HardwareSerial
@@ -109,7 +109,7 @@ private:
   uint8_t bufferLen;
   uint16_t frameptr;
 
-#if defined(__AVR__) || defined(ESP8266)
+#if defined(__AVR__) || defined(ESP8266) || defined(ESP32)
   SoftwareSerial *swSerial;
 #endif
   HardwareSerial *hwSerial;
