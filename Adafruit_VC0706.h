@@ -108,6 +108,7 @@ private:
   uint8_t camerabuff[CAMERABUFFSIZ + 1];
   uint8_t bufferLen;
   uint16_t frameptr;
+  uint16_t glitchBytes = 0;
 
 #if defined(__AVR__) || defined(ESP8266)
   SoftwareSerial *swSerial;
