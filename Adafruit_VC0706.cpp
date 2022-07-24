@@ -554,7 +554,28 @@ uint8_t *Adafruit_VC0706::readPicture(uint8_t n) {
     return 0;
 
   // read into the buffer PACKETLEN!
-  if (readResponse(n + 5, CAMERADELAY) == 0)
+  uint8_t frameEndLen = 5 - glitchBytes;
+
+  uint8_t readLen = readResponse(n + frameEndLen, 200);
+
+  if (readLen == (n + (frameEndLen - 1))) {
+    // Some reads for picture data, no matter how long we wait, will be short
+    // one byte. Worse, that lost byte will show up on the front of the next
+    // readPicture request. This can happen multiple times compounding the
+    // problem.
+    glitchBytes++;
+
+    // The trailer is only 5 bytes, so if we glitch too many times we run out of picture data.
+    // Then we're really stuck.
+    if (glitchBytes > 5)
+      return 0;
+
+    Serial.print("glitch: ");
+    Serial.println(glitchBytes);
+    printBuff();
+  }
+
+  if (readLen < n)
     return 0;
 
   frameptr += n;
@@ -570,6 +591,9 @@ boolean Adafruit_VC0706::runCommand(uint8_t cmd, uint8_t *args, uint8_t argn,
   if (flushflag) {
     readResponse(100, 10);
   }
+
+  // Adjust the expected response by how many extra glitch bytes we expect to be prepended.
+  resplen += glitchBytes;
 
   sendCommand(cmd, args, argn);
   if (readResponse(resplen, 200) != resplen)
@@ -633,6 +657,7 @@ uint8_t Adafruit_VC0706::readResponse(uint8_t numbytes, uint8_t timeout) {
     camerabuff[bufferLen++] = hwSerial->read();
 #endif
   }
+
   // printBuff();
   // camerabuff[bufferLen] = 0;
   // Serial.println((char*)camerabuff);
@@ -640,9 +665,9 @@ uint8_t Adafruit_VC0706::readResponse(uint8_t numbytes, uint8_t timeout) {
 }
 
 boolean Adafruit_VC0706::verifyResponse(uint8_t command) {
-  if ((camerabuff[0] != 0x76) || (camerabuff[1] != serialNum) ||
-      (camerabuff[2] != command) || (camerabuff[3] != 0x0))
+  if ((camerabuff[glitchBytes] != 0x76) || (camerabuff[glitchBytes+1] != serialNum) || (camerabuff[glitchBytes+2] != command) || (camerabuff[glitchBytes+3] != 0x0))
     return false;
+
   return true;
 }
 
