@@ -159,7 +159,7 @@ boolean Adafruit_VC0706::getMotionDetect(void) {
 /**************************************************************************/
 /*!
     @brief  Get image size with VC0706_READ_DATA
-    @return VC0706_640x480, VC0706_320x240 or VC0706_160x120
+    @return VC0706_640x480, VC0706_320x240, VC0706_160x120, etc.
 */
 /**************************************************************************/
 uint8_t Adafruit_VC0706::getImageSize() {
@@ -173,12 +173,19 @@ uint8_t Adafruit_VC0706::getImageSize() {
 /**************************************************************************/
 /*!
     @brief  Set image size with VC0706_WRITE_DATA
-    @param x VC0706_640x480, VC0706_320x240 or VC0706_160x120
+    @param x VC0706_640x480, VC0706_320x240, VC0706_160x120, etc.
     @return True on command success
 */
 /**************************************************************************/
 boolean Adafruit_VC0706::setImageSize(uint8_t x) {
   uint8_t args[] = {0x05, 0x04, 0x01, 0x00, 0x19, x};
+
+  if (x < 0x33)
+    // standard image resolution
+    args[1] = 0x04;
+  else
+    // extended image resolution
+    args[1] = 0x05;
 
   return runCommand(VC0706_WRITE_DATA, args, sizeof(args), 5);
 }
