@@ -147,7 +147,7 @@ void setup() {
   File imgFile = SD.open(filename, FILE_WRITE);
 
   // Get the size of the image (frame) taken  
-  uint16_t jpglen = cam.frameLength();
+  uint32_t jpglen = cam.frameLength();
   Serial.print("Storing ");
   Serial.print(jpglen, DEC);
   Serial.print(" byte image.");
@@ -159,7 +159,7 @@ void setup() {
   while (jpglen > 0) {
     // read 32 bytes at a time;
     uint8_t *buffer;
-    uint8_t bytesToRead = min((uint16_t)32, jpglen); // change 32 to 64 for a speedup but may not work with all setups!
+    uint8_t bytesToRead = min((uint32_t)32, jpglen); // change 32 to 64 for a speedup but may not work with all setups!
     buffer = cam.readPicture(bytesToRead);
     imgFile.write(buffer, bytesToRead);
     if(++wCount >= 64) { // Every 2K, give a little feedback so it doesn't appear locked up
