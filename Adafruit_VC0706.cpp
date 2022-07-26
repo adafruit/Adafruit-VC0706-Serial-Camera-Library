@@ -329,8 +329,8 @@ void Adafruit_VC0706::OSD(uint8_t x, uint8_t y, char *str) {
     str[13] = 0;
   }
 
-  uint8_t args[17] = {strlen(str), strlen(str) - 1,
-                      (y & 0xF) | ((x & 0x3) << 4)};
+  uint8_t args[17] = {(uint8_t)strlen(str), (uint8_t)(strlen(str) - 1),
+                      (uint8_t)((y & 0xF) | ((x & 0x3) << 4))};
 
   for (uint8_t i = 0; i < strlen(str); i++) {
     char c = str[i];
@@ -389,8 +389,10 @@ uint8_t Adafruit_VC0706::getCompression(void) {
 /**************************************************************************/
 boolean Adafruit_VC0706::setPTZ(uint16_t wz, uint16_t hz, uint16_t pan,
                                 uint16_t tilt) {
-  uint8_t args[] = {0x08,     wz >> 8, wz,        hz >> 8, wz,
-                    pan >> 8, pan,     tilt >> 8, tilt};
+  uint8_t args[] = {
+      0x08,         (uint8_t)(wz >> 8),  (uint8_t)wz,  (uint8_t)(hz >> 8),
+      (uint8_t)hz,  (uint8_t)(pan >> 8), (uint8_t)pan, (uint8_t)(tilt >> 8),
+      (uint8_t)tilt};
 
   return (!runCommand(VC0706_SET_ZOOM, args, sizeof(args), 5));
 }
@@ -539,10 +541,10 @@ uint8_t *Adafruit_VC0706::readPicture(uint8_t n) {
   uint8_t args[] = {0x0C,
                     0x0,
                     0x0A,
-                    (frameptr >> 24) & 0xFF,
-                    (frameptr >> 16) & 0xFF,
-                    (frameptr >> 8) & 0xFF,
-                    frameptr & 0xFF,
+                    (uint8_t)((frameptr >> 24) & 0xFF),
+                    (uint8_t)((frameptr >> 16) & 0xFF),
+                    (uint8_t)((frameptr >> 8) & 0xFF),
+                    (uint8_t)(frameptr & 0xFF),
                     0,
                     0,
                     0,
