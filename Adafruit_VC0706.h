@@ -43,9 +43,15 @@
 #define VC0706_RESUMEFRAME 0x3
 #define VC0706_STEPFRAME 0x2
 
+// standard image sizes for PTC-08 (Adafruit Product ID: 397)
 #define VC0706_640x480 0x00
 #define VC0706_320x240 0x11
 #define VC0706_160x120 0x22
+// additional image sizes for compatible 2MP cameras like SC20MPB
+#define VC0706_1024x768 0x33
+#define VC0706_1280x720 0x44
+#define VC0706_1280x960 0x55
+#define VC0706_1920x1080 0x66
 
 #define VC0706_MOTIONCONTROL 0x0
 #define VC0706_UARTMOTION 0x01
@@ -107,7 +113,7 @@ private:
   uint8_t serialNum;
   uint8_t camerabuff[CAMERABUFFSIZ + 1];
   uint8_t bufferLen;
-  uint16_t frameptr;
+  uint32_t frameptr;
 
 #if defined(__AVR__) || defined(ESP8266)
   SoftwareSerial *swSerial;

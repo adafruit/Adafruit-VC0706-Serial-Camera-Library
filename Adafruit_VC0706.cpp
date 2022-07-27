@@ -159,7 +159,7 @@ boolean Adafruit_VC0706::getMotionDetect(void) {
 /**************************************************************************/
 /*!
     @brief  Get image size with VC0706_READ_DATA
-    @return VC0706_640x480, VC0706_320x240 or VC0706_160x120
+    @return VC0706_640x480, VC0706_320x240, VC0706_160x120, etc.
 */
 /**************************************************************************/
 uint8_t Adafruit_VC0706::getImageSize() {
@@ -173,12 +173,19 @@ uint8_t Adafruit_VC0706::getImageSize() {
 /**************************************************************************/
 /*!
     @brief  Set image size with VC0706_WRITE_DATA
-    @param x VC0706_640x480, VC0706_320x240 or VC0706_160x120
+    @param x VC0706_640x480, VC0706_320x240, VC0706_160x120, etc.
     @return True on command success
 */
 /**************************************************************************/
 boolean Adafruit_VC0706::setImageSize(uint8_t x) {
   uint8_t args[] = {0x05, 0x04, 0x01, 0x00, 0x19, x};
+
+  if (x < VC0706_1024x768)
+    // standard image resolution
+    args[1] = 0x04;
+  else
+    // extended image resolution
+    args[1] = 0x05;
 
   return runCommand(VC0706_WRITE_DATA, args, sizeof(args), 5);
 }
@@ -329,8 +336,8 @@ void Adafruit_VC0706::OSD(uint8_t x, uint8_t y, char *str) {
     str[13] = 0;
   }
 
-  uint8_t args[17] = {strlen(str), strlen(str) - 1,
-                      (y & 0xF) | ((x & 0x3) << 4)};
+  uint8_t args[17] = {(uint8_t)strlen(str), (uint8_t)(strlen(str) - 1),
+                      (uint8_t)((y & 0xF) | ((x & 0x3) << 4))};
 
   for (uint8_t i = 0; i < strlen(str); i++) {
     char c = str[i];
@@ -389,8 +396,10 @@ uint8_t Adafruit_VC0706::getCompression(void) {
 /**************************************************************************/
 boolean Adafruit_VC0706::setPTZ(uint16_t wz, uint16_t hz, uint16_t pan,
                                 uint16_t tilt) {
-  uint8_t args[] = {0x08,     wz >> 8, wz,        hz >> 8, wz,
-                    pan >> 8, pan,     tilt >> 8, tilt};
+  uint8_t args[] = {
+      0x08,         (uint8_t)(wz >> 8),  (uint8_t)wz,  (uint8_t)(hz >> 8),
+      (uint8_t)hz,  (uint8_t)(pan >> 8), (uint8_t)pan, (uint8_t)(tilt >> 8),
+      (uint8_t)tilt};
 
   return (!runCommand(VC0706_SET_ZOOM, args, sizeof(args), 5));
 }
@@ -539,10 +548,10 @@ uint8_t *Adafruit_VC0706::readPicture(uint8_t n) {
   uint8_t args[] = {0x0C,
                     0x0,
                     0x0A,
-                    0,
-                    0,
-                    frameptr >> 8,
-                    frameptr & 0xFF,
+                    (uint8_t)((frameptr >> 24) & 0xFF),
+                    (uint8_t)((frameptr >> 16) & 0xFF),
+                    (uint8_t)((frameptr >> 8) & 0xFF),
+                    (uint8_t)(frameptr & 0xFF),
                     0,
                     0,
                     0,
