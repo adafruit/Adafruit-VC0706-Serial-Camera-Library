@@ -180,7 +180,7 @@ uint8_t Adafruit_VC0706::getImageSize() {
 boolean Adafruit_VC0706::setImageSize(uint8_t x) {
   uint8_t args[] = {0x05, 0x04, 0x01, 0x00, 0x19, x};
 
-  if (x < 0x33)
+  if (x < VC0706_1024x768)
     // standard image resolution
     args[1] = 0x04;
   else
