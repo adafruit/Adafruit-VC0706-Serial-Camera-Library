@@ -79,15 +79,13 @@ boolean Adafruit_VC0706::reset() {
 
   bool rval = runCommand(VC0706_RESET, args, 1, 5);
 #if defined(__AVR__) || defined(ESP8266)
-  if (swSerial)
-  {
+  if (swSerial) {
     // after initial response the camera returns some basic config info that
     // ends with 'Init end'
     if (!swSerial->find("Init end"))
       delay(1000); // Camera serial timed out waiting for begin's reset
                    // just wait a sec and then continue
-  }
-  else
+  } else
 #endif
   {
     if (!hwSerial->find("Init end"))
