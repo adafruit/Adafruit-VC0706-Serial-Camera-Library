@@ -80,13 +80,16 @@ boolean Adafruit_VC0706::reset() {
   bool rval = runCommand(VC0706_RESET, args, 1, 5);
 #if defined(__AVR__) || defined(ESP8266)
   if (swSerial)
-    // after initial response the camera returns some basic config info that ends with 'Init end'
+    // after initial response the camera returns some basic config info that
+    // ends with 'Init end'
     if (!swSerial->find("Init end"))
-      delay(1000); // Camera serial timed out waiting for begin's reset- just wait a sec and then continue
+      delay(1000); // Camera serial timed out waiting for begin's reset 
+		   // just wait a sec and then continue
   else
 #endif
     if (!hwSerial->find("Init end"))
-      delay(1000); // Camera serial timed out waiting for begin's reset- just wait a sec and then continue
+      delay(1000); // Camera serial timed out waiting for begin's reset
+		   // just wait a sec and then continue
   
   return rval;
 }
@@ -246,7 +249,8 @@ char *Adafruit_VC0706::getVersion(void) {
   if (!readResponse(CAMERABUFFSIZ, 200))
     return 0;
   camerabuff[bufferLen] = 0; // end it!
-  return (char *)(camerabuff+7); // skip over the CR LF and standard response header and return it!
+  // skip over the CR LF and standard response header and return the rest 
+  return (char *)(camerabuff+7); 
 }
 
 /**************************************************************************/
