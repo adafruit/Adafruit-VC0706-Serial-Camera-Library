@@ -228,14 +228,14 @@ boolean Adafruit_VC0706::setDownsize(uint8_t newsize) {
 */
 /**************************************************************************/
 char *Adafruit_VC0706::getVersion(void) {
-  uint8_t args[] = {0x01};
+  uint8_t args[] = {0x00};
 
   sendCommand(VC0706_GEN_VERSION, args, 1);
   // get reply
   if (!readResponse(CAMERABUFFSIZ, 200))
     return 0;
   camerabuff[bufferLen] = 0; // end it!
-  return (char *)camerabuff; // return it!
+  return (char *)(camerabuff+7); // skip over the CR LF and standard response header and return it!
 }
 
 /**************************************************************************/
