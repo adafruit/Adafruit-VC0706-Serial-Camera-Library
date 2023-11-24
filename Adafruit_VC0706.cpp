@@ -77,7 +77,22 @@ boolean Adafruit_VC0706::begin(uint32_t baud) {
 boolean Adafruit_VC0706::reset() {
   uint8_t args[] = {0x0};
 
-  return runCommand(VC0706_RESET, args, 1, 5);
+  bool rval = runCommand(VC0706_RESET, args, 1, 5);
+#if defined(__AVR__) || defined(ESP8266)
+  if (swSerial) {
+    // after initial response the camera returns some basic config info that
+    // ends with 'Init end'
+    if (!swSerial->find("Init end"))
+      delay(1000); // Camera serial timed out waiting for begin's reset
+                   // just wait a sec and then continue
+  } else
+#endif
+  {
+    if (!hwSerial->find("Init end"))
+      delay(1000); // Camera serial timed out waiting for begin's reset
+                   // just wait a sec and then continue
+  }
+  return rval;
 }
 
 /**************************************************************************/
@@ -228,14 +243,15 @@ boolean Adafruit_VC0706::setDownsize(uint8_t newsize) {
 */
 /**************************************************************************/
 char *Adafruit_VC0706::getVersion(void) {
-  uint8_t args[] = {0x01};
+  uint8_t args[] = {0x00};
 
   sendCommand(VC0706_GEN_VERSION, args, 1);
   // get reply
   if (!readResponse(CAMERABUFFSIZ, 200))
     return 0;
   camerabuff[bufferLen] = 0; // end it!
-  return (char *)camerabuff; // return it!
+  // skip over the CR LF and standard response header and return the rest
+  return (char *)(camerabuff + 7);
 }
 
 /**************************************************************************/
