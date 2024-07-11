@@ -79,7 +79,7 @@ public:
   boolean TVon(void);
   boolean TVoff(void);
   boolean takePicture(void);
-  uint8_t *readPicture(uint8_t n);
+  uint8_t *readPicture(uint8_t n, uint32_t delay_time = CAMERADELAY);
   boolean resumeVideo(void);
   uint32_t frameLength(void);
   char *getVersion(void);
